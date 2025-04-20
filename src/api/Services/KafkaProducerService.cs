@@ -1,5 +1,6 @@
 using Confluent.Kafka;
 using KafkaStarter.Shared.Models;
+using KafkaStarter.Api.Models;
 using System.Text.Json;
 
 namespace KafkaStarter.Api.Services
@@ -33,6 +34,7 @@ namespace KafkaStarter.Api.Services
 
         public async Task<DeliveryResult<string, string>> ProduceMessageAsync(SimpleMessage message, string topic = "messages")
         {
+            // Ensure message has ID and timestamp
             if (message.Id == Guid.Empty)
             {
                 message.Id = Guid.NewGuid();
@@ -59,12 +61,6 @@ namespace KafkaStarter.Api.Services
             
             foreach (var message in messages)
             {
-                if (message.Id == Guid.Empty)
-                {
-                    message.Id = Guid.NewGuid();
-                }
-                
-                message.Timestamp = DateTime.UtcNow;
                 
                 var result = await _producer.ProduceAsync(topic, new Message<string, string>
                 {
@@ -104,3 +100,46 @@ namespace KafkaStarter.Api.Services
         }
     }
 } 
+
+
+
+curl -X POST \
+  -H "Authorization: Bearer $(gcloud auth application-default print-access-token)" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [
+      {
+        "role": "user",
+        "parts": [
+          {
+            "file_data": {
+              "mime_type": "audio/mp3",
+              "uri": "https://cdn.shopify.com/s/files/1/0644/2434/5735/files/Curious_Minds_FINAL.mp3?v=1744860673"
+            }
+          },
+          {
+            "text": "Analyze this music track and provide a short description and relevant tags for music search and discovery."
+          }
+        ]
+      }
+    ],
+    "generationConfig": {
+      "response_mime_type": "application/json"
+    },
+    "responseSchema": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["description", "tags"]
+    }
+  }' \
+  "https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/gemini-2.0-flash:generateContent"
