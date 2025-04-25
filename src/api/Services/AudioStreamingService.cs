@@ -3,7 +3,7 @@ using KafkaStarter.Shared.Models;
 
 namespace KafkaStarter.Api.Services
 {
-    public class AudioProcessingService(IOpenAIService openAIService, IKafkaProducerService kafkaProducer)
+    public class AudioStreamingService(IOpenAIService openAIService, IKafkaProducerService kafkaProducer)
     {
         private readonly IOpenAIService _openAIService = openAIService;
         private readonly IKafkaProducerService _kafkaProducer = kafkaProducer;

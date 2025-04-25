@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSingleton<KafkaStarter.Api.Services.IKafkaProducerService, KafkaStarter.Api.Services.KafkaProducerService>();
 builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<KafkaStarter.Api.Services.IOpenAIService, KafkaStarter.Api.Services.OpenAIService>();
-builder.Services.AddSingleton<KafkaStarter.Api.Services.AudioProcessingService>();
+builder.Services.AddSingleton<KafkaStarter.Api.Services.AudioStreamingService>();
 
 // CORS configuration for local development
 builder.Services.AddCors(options =>
@@ -49,9 +49,9 @@ app.Use(async (context, next) =>
     {
         if (context.WebSockets.IsWebSocketRequest)
         {
-            var audioProcessingService = app.Services.GetRequiredService<KafkaStarter.Api.Services.AudioProcessingService>();
+            var AudioStreamingService = app.Services.GetRequiredService<KafkaStarter.Api.Services.AudioStreamingService>();
             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            await audioProcessingService.HandleTTSWebSocket(webSocket);
+            await AudioStreamingService.HandleTTSWebSocket(webSocket);
         }
         else
         {
