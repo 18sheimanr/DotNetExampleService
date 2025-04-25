@@ -53,7 +53,7 @@ namespace KafkaStarter.Api.Services
                             Console.WriteLine($"Transcribed text: {transcribedText}");
                             
                             // Step 2: Process text with LLM
-                            string llmResponse = await _openAIService.ProcessWithLLM(transcribedText, 256);
+                            string llmResponse = await _openAIService.ProcessWithLLM(transcribedText);
                             Console.WriteLine($"LLM response: {llmResponse}");
                             
                             // Send LLM response to Kafka

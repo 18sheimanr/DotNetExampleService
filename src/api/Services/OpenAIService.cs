@@ -8,7 +8,7 @@ namespace KafkaStarter.Api.Services
     public interface IOpenAIService
     {
         Task<string> TranscribeSpeech(byte[] audioData);
-        Task<string> ProcessWithLLM(string inputText, int maxTokens = 512);
+        Task<string> ProcessWithLLM(string inputText, int maxTokens = 256);
         Task<Stream> TextToSpeech(string text);
     }
 
@@ -52,13 +52,14 @@ namespace KafkaStarter.Api.Services
             return transcriptionResult!.Text;
         }
 
-        public async Task<string> ProcessWithLLM(string inputText, int maxTokens = 512)
+        public async Task<string> ProcessWithLLM(string inputText, int maxTokens = 256)
         {
             var requestBody = new
             {
                 model = "gpt-4o",
                 messages = new[]
                 {
+                    new { role = "system", content = "You are a helpful assistant that can answer questions. You keep your responses concise and to the point, never more than 2 sentences." },
                     new { role = "user", content = inputText }
                 },
                 max_tokens = maxTokens
