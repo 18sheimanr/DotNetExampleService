@@ -4,7 +4,9 @@ This project is a comprehensive example application designed to help developers 
 
 The frontend allows a user to record an audio segment (no automatic VAD) and sends it to the .NET backend over websocket.
 Next, the backend transcribes it to text, produces a response via LLM, and finally streams audio back to the frontend via the same websocket, closing it when done.
-Responses generated are sent to the LLMResponseGenerated Kafka topic.
+Responses generated are sent to the LLMResponseGenerated Kafka topic, as seen below in the video.
+
+https://github.com/user-attachments/assets/2b563da0-ab35-442b-8099-016d4756bac3
 
 ## Project Structure
 
