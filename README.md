@@ -1,10 +1,14 @@
-# KafkaStarter - Learning .NET 9 with Kafka
+# STS/AI/Kafka Starter Project - Learning .NET 9 with Kafka and audio streaming
 
 This project is a comprehensive example application designed to help developers learn C#, .NET 9, and Apache Kafka integration. The solution demonstrates a modern web API with Kafka message production and consumption capabilities.
 
+The frontend allows a user to record an audio segment (no automatic VAD) and sends it to the .NET backend over websocket.
+Next, the backend transcribes it to text, produces a response via LLM, and finally streams audio back to the frontend via the same websocket, closing it when done.
+Responses generated are sent to the LLMResponseGenerated Kafka topic.
+
 ## Project Structure
 
-- **API**: RESTful service with a Kafka producer singleton service
+- **API**: RESTful service with a Kafka producer singleton service and openAIService for STS AI
 - **Consumer**: Console application that consumes messages from Kafka
 - **Shared**: Common models and utilities shared between projects
 
@@ -32,18 +36,25 @@ This will start:
 ### 2. Run the API
 
 ```bash
-dotnet run --project src/api/KafkaStarter.api.csproj
+dotnet run --project src/api/KafkaStart.api.csproj
 ```
 
 The API will be available at http://localhost:5000 with Swagger UI accessible at the root URL.
 
-### 3. Run the Consumer (in a separate terminal)
+### 3. Run the frontend React App (in a separate terminal)
 
 ```bash
-dotnet run --project src/consumer/KafkaStarter.consumer.csproj
+cd ./frontend && npm start
 ```
 
-The consumer will start listening for messages on the "messages" topic.
+### 4. Run the Consumer (in a separate terminal) (also, optional, it doesn't do anything at the moment lol)
+
+```bash
+dotnet run --project src/consumer/KafkaStart.consumer.csproj
+```
+
+The consumer will start listening for messages on the "messages" and "LLMResponseGenerated" topic.
+The former is produced from the /messages http endpoint, the latter from the STS AI processing
 
 ## Using the Application
 
@@ -74,3 +85,4 @@ Use the Kafka UI at http://localhost:8080 to explore topics and messages
 - Add authentication to the API
 - Implement more complex message processing logic
 - Add unit and integration tests
+- Store all transcribed and LLM generated messages for full conversations instead of zero shot

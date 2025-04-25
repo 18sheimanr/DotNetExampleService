@@ -9,12 +9,10 @@ namespace KafkaStarter.Consumer
     {
         public static async Task Main(string[] args)
         {
-            // Load configuration
             IConfiguration configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
 
-            // Configure consumer
             var consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = configuration["Kafka:BootstrapServers"],
@@ -25,13 +23,14 @@ namespace KafkaStarter.Consumer
             Console.WriteLine("Starting Kafka consumer...");
             Console.WriteLine($"Bootstrap Servers: {consumerConfig.BootstrapServers}");
             Console.WriteLine($"Group ID: {consumerConfig.GroupId}");
-            Console.WriteLine($"Topic: messages");
+            Console.WriteLine($"Topics: messages, LLMResponseGenerated");
 
             using var consumer = new ConsumerBuilder<string, string>(consumerConfig)
                 .SetErrorHandler((_, e) => Console.WriteLine($"Error: {e.Reason}"))
                 .Build();
 
-            consumer.Subscribe("messages");
+            // Subscribe to both topics, one comes from API and the other comes from STS pipeline
+            consumer.Subscribe(new[] { "messages", "LLMResponseGenerated" });
 
             try
             {
@@ -54,7 +53,6 @@ namespace KafkaStarter.Consumer
                             Console.WriteLine($"Content: {message.Content}");
                             Console.WriteLine($"Timestamp: {message.Timestamp}");
                             
-                            // Simulate processing (you would add your actual processing logic here)
                             await Task.Delay(1000); // Simulate work
                             
                             Console.WriteLine($"Message {message.Id} processed successfully.");
