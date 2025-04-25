@@ -6,6 +6,8 @@ The frontend allows a user to record an audio segment (no automatic VAD) and sen
 Next, the backend transcribes it to text, produces a response via LLM, and finally streams audio back to the frontend via the same websocket, closing it when done.
 Responses generated are sent to the LLMResponseGenerated Kafka topic.
 
+https://github.com/user-attachments/assets/2b563da0-ab35-442b-8099-016d4756bac3
+
 ## Project Structure
 
 - **API**: RESTful service with a Kafka producer singleton service and openAIService for STS AI
