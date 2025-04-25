@@ -15,7 +15,7 @@ namespace KafkaStarter.Api.Services
     public class OpenAIService : IOpenAIService
     {
         private readonly HttpClient _httpClient;
-        private readonly string _apiKey;
+        private readonly string? _apiKey;
         
         public OpenAIService(HttpClient httpClient, IConfiguration configuration)
         {
@@ -80,7 +80,7 @@ namespace KafkaStarter.Api.Services
             var jsonResponse = await response.Content.ReadAsStringAsync();
             var completionResult = JsonSerializer.Deserialize<CompletionResult>(jsonResponse);
             
-            return completionResult?.Choices[0].Message.Content;
+            return completionResult!.Choices[0].Message.Content;
         }
 
         // Quickly provides a text to speech STREAM not a ready audio response
