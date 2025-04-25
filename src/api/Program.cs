@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddSingleton<KafkaStarter.Api.Services.IKafkaProducerService, KafkaStarter.Api.Services.KafkaProducerService>();
 builder.Services.AddSingleton<HttpClient>();
 builder.Services.AddSingleton<KafkaStarter.Api.Services.IOpenAIService, KafkaStarter.Api.Services.OpenAIService>();
-builder.Services.AddSingleton<KafkaStarter.Api.Services.WebSocketHandler>();
+builder.Services.AddSingleton<KafkaStarter.Api.Services.AudioProcessingService>();
 
 // CORS configuration for local development
 builder.Services.AddCors(options =>
@@ -35,12 +35,10 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "KafkaStarter API v1");
-    c.RoutePrefix = ""; // Set Swagger UI at root
+    c.RoutePrefix = "";
 });
 
-// app.UseHttpsRedirection();
-
-// Configure WebSocket
+// Configure WebSocket for TTS
 app.UseWebSockets(new WebSocketOptions
 {
     KeepAliveInterval = TimeSpan.FromSeconds(30)
@@ -51,9 +49,9 @@ app.Use(async (context, next) =>
     {
         if (context.WebSockets.IsWebSocketRequest)
         {
-            var handler = app.Services.GetRequiredService<KafkaStarter.Api.Services.WebSocketHandler>();
+            var audioProcessingService = app.Services.GetRequiredService<KafkaStarter.Api.Services.AudioProcessingService>();
             WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-            await handler.HandleTTSWebSocket(webSocket);
+            await audioProcessingService.HandleTTSWebSocket(webSocket);
         }
         else
         {
